@@ -2,16 +2,16 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import numpy as np
 import math
+from config import adult_data_path
 
 
 # TODO Comentar
-# TODO Archivo de configuración
 def preprocess_data(shuffle: bool = False):
     try:
-        data = pd.read_csv('../data/adult.data')  # TODO Tener en cuenta desde donde se ejecuta al cliente
+        data = pd.read_csv(adult_data_path)  # TODO Tener en cuenta desde donde se ejecuta al cliente
     except FileNotFoundError:
         data = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data')
-        data.to_csv('../data/adult.data', index=False)
+        data.to_csv(adult_data_path, index=False)
 
     data.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education-num',
                     'marital-status', 'occupation', 'relationship', 'race', 'sex',
