@@ -5,6 +5,7 @@ import math
 
 
 # TODO Comentar
+# TODO Archivo de configuración
 def preprocess_data(shuffle: bool = False):
     try:
         data = pd.read_csv('../data/adult.data')  # TODO Tener en cuenta desde donde se ejecuta al cliente
@@ -35,8 +36,9 @@ def preprocess_data(shuffle: bool = False):
 
 
 def load_client_data(num_parties, client_id, data, labels):
-    num_chars = len(data[0]) - 1
-
+    num_chars = len(data[0]) - 1  # Para evitar considerar el ID como característica
+    chars_per_party = math.floor(num_chars / num_parties)
+    data = data[:, 1:]
     if num_parties >= num_chars or client_id - 1 >= num_parties:
         raise ValueError(
             "Number of parties must be less or equal than the number of characteristics or Client id must be less "
@@ -44,12 +46,8 @@ def load_client_data(num_parties, client_id, data, labels):
     elif client_id == 0:
         raise ValueError("Client id must be greater than 0")
     elif client_id == num_parties:
-        chars_per_party = math.floor(num_chars / num_parties)
-        data = data[:, 1:]
-        party_charts = data[:, (client_id - 1) * chars_per_party: num_chars]
+        party_charts = data[:, (client_id - 1) * chars_per_party:]
     else:
-        chars_per_party = math.floor(num_chars / num_parties)
-        data = data[:, 1:]
         party_charts = data[:, (client_id - 1) * chars_per_party: client_id * chars_per_party]
 
     return np.hstack((labels[:, 0].reshape(-1, 1), party_charts)), labels[:, 1].reshape(-1, 1)
