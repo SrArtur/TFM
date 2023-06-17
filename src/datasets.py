@@ -8,7 +8,7 @@ from config import adult_data_path
 # TODO Comentar
 def preprocess_data(shuffle: bool = False):
     try:
-        data = pd.read_csv(adult_data_path)  # TODO Tener en cuenta desde donde se ejecuta al cliente
+        data = pd.read_csv(adult_data_path)
     except FileNotFoundError:
         data = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data')
         data.to_csv(adult_data_path, index=False)
