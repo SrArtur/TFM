@@ -1,18 +1,24 @@
+import math
+
+import config
+import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-import numpy as np
-import math
-from config import adult_data_path
 
 
 # TODO Comentar
-def preprocess_data(shuffle: bool = False):
+# TODO Logs
+def preprocess_data(shuffle: bool = False, testing: bool = False):
     try:
-        data = pd.read_csv(adult_data_path)
+        if testing:
+            data = pd.read_csv("data/adult.data")
+        else:
+            print("Loading dataset from local file...")
+            data = pd.read_csv(config.adult_data_path)
     except FileNotFoundError:
+        print("Dataset not found. Downloading from UCI repository...")
         data = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data')
-        data.to_csv(adult_data_path, index=False)
-
+        data.to_csv(config.adult_data_path, index=False)
     data.columns = ['age', 'workclass', 'fnlwgt', 'education', 'education-num',
                     'marital-status', 'occupation', 'relationship', 'race', 'sex',
                     'capital-gain', 'capital-loss', 'hours-per-week', 'native-country', 'income']
@@ -36,6 +42,8 @@ def preprocess_data(shuffle: bool = False):
 
 
 def load_client_data(num_parties, client_id, data, labels):
+    # TODO Poner si devolver con o sin train_test_split
+    # TODO Poner si se devuelve con o sin ID
     num_chars = len(data[0]) - 1  # Para evitar considerar el ID como característica
     chars_per_party = math.floor(num_chars / num_parties)
     data = data[:, 1:]
@@ -51,3 +59,4 @@ def load_client_data(num_parties, client_id, data, labels):
         party_charts = data[:, (client_id - 1) * chars_per_party: client_id * chars_per_party]
 
     return np.hstack((labels[:, 0].reshape(-1, 1), party_charts)), labels[:, 1].reshape(-1, 1)
+
