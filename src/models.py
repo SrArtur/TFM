@@ -6,6 +6,7 @@ import os
 import numpy as np
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+tf.random.set_seed(42)
 
 
 def load_simple_model(input_dim: int, name: str):
@@ -13,6 +14,15 @@ def load_simple_model(input_dim: int, name: str):
     layer = Dense(input_dim, activation='selu')(inputs)
     layer = Dense(8, activation='selu')(layer)
     layer = Dense(4, activation='selu')(layer)
+    layer = Dense(1, activation='sigmoid')(layer)  # Cambiar a 'linear' si logits=True
+    return keras.Model(inputs, layer, name=name)
+
+
+def load_simple_model2(input_dim: int, name: str):
+    inputs = Input(shape=(input_dim,))
+    layer = Dense(input_dim, activation='selu')(inputs)
+    layer = Dense(128, activation='selu')(layer)
+    layer = Dense(64, activation='selu')(layer)
     layer = Dense(1, activation='sigmoid')(layer)  # Cambiar a 'linear' si logits=True
     return keras.Model(inputs, layer, name=name)
 
