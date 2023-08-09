@@ -1,13 +1,13 @@
 import numpy as np
-from src.datasets import preprocess_data, load_client_data
+from src.datasets import preprocess_data_adult_income, load_client_data
 import pytest
 import os
 import sys
 
 
-def test_preprocess_data():
+def test_preprocess_data_adult_income():
     # Ejecutar la función sin shuffle
-    data_scaled, data_labels = preprocess_data(shuffle=False)
+    data_scaled, data_labels = preprocess_data_adult_income(shuffle=False, testing=True)
 
     # Comprobar que los datos tienen el formato esperado
     assert isinstance(data_scaled, np.ndarray)
@@ -20,7 +20,39 @@ def test_preprocess_data():
     assert np.unique(data_labels[1]).size == 2
 
     # Ejecutar la función con shuffle
-    data_scaled_shuffled, data_labels_shuffled = preprocess_data(shuffle=True)
+    data_scaled_shuffled, data_labels_shuffled = preprocess_data_adult_income(shuffle=True, testing=True)
+
+    # Comprobar que los datos tienen el formato esperado
+    assert isinstance(data_scaled_shuffled, np.ndarray)
+    assert isinstance(data_labels_shuffled, np.ndarray)
+
+    # Comprobar que no hay valores faltantes en los datos
+    assert np.isnan(data_scaled_shuffled).sum() == 0
+
+    # Comprobar que las etiquetas están codificadas correctamente
+    assert np.unique(data_labels_shuffled[1]).size == 2
+
+    # Comprobar que los datos están realmente mezclados
+    assert not np.array_equal(data_scaled, data_scaled_shuffled)
+    assert not np.array_equal(data_labels, data_labels_shuffled)
+
+
+def test_preprocess_data_breast_cancer():
+    # Ejecutar la función sin shuffle
+    data_scaled, data_labels = preprocess_data_adult_income(shuffle=False, testing=True)
+
+    # Comprobar que los datos tienen el formato esperado
+    assert isinstance(data_scaled, np.ndarray)
+    assert isinstance(data_labels, np.ndarray)
+
+    # Comprobar que no hay valores faltantes en los datos
+    assert np.isnan(data_scaled).sum() == 0
+
+    # Comprobar que las etiquetas están codificadas correctamente
+    assert np.unique(data_labels[1]).size == 2
+
+    # Ejecutar la función con shuffle
+    data_scaled_shuffled, data_labels_shuffled = preprocess_data_adult_income(shuffle=True, testing=True)
 
     # Comprobar que los datos tienen el formato esperado
     assert isinstance(data_scaled_shuffled, np.ndarray)
