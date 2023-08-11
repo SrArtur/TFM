@@ -9,7 +9,16 @@ import logging
 logger = logging.getLogger("TFM")
 
 
-def preprocess_data(name: str = None, shuffle: bool = False, testing: bool = False, ):
+def preprocess_data(name: str = None, shuffle: bool = False, testing: bool = False):
+    """
+    Función que devuelve los datos preprocesados de un dataset entre los disponibles.
+
+    :param name: Nombre del dataset a cargar.
+    :param shuffle: Booleano que indica si se quiere mezclar el orden de las características.
+    :param testing: Booleano que indica si el conjunto de datos se carga para test unitarios.
+
+    :return: Tupla con los datos preprocesados y las etiquetas.
+    """
     if name == "adult_income":
         return preprocess_data_adult_income(shuffle, testing)
     elif name == "breast_cancer":
@@ -18,8 +27,13 @@ def preprocess_data(name: str = None, shuffle: bool = False, testing: bool = Fal
         raise ValueError("Dataset name not found")
 
 
-# TODO Comentar
 def preprocess_data_breast_cancer(shuffle: bool = False, testing: bool = False):
+    """
+    Función que devuelve los datos preprocesados del dataset Breast Cancer.
+    :param shuffle: Booleano que indica si se quiere mezclar el orden de las características.
+    :param testing: Booleano que indica si el conjunto de datos se carga para test unitarios.
+    :return: Tupla con los datos preprocesados y las etiquetas de Breast Cancer.
+    """
     try:
         if testing:
             data = pd.read_csv("data/breast-cancer.data")
@@ -40,14 +54,14 @@ def preprocess_data_breast_cancer(shuffle: bool = False, testing: bool = False):
                     'fractal_dimension_worst']
     data = data.replace('?', np.nan)
     data = data.dropna()
-
+    data = data.drop(['id'], axis=1)
     if shuffle:
+        logger.info("Shuffling characteristics of dataset BREAST CANCER...")
         target = data['diagnosis']
         data = data.iloc[:, 1:]
         data = data.sample(frac=1, axis=1).reset_index(drop=True)
         data['diagnosis'] = target
 
-    data = data.drop(['id'], axis=1)
     data_labels = data['diagnosis']
     data_labels = data_labels.replace({'M': 1, 'B': 0})
 
@@ -61,6 +75,12 @@ def preprocess_data_breast_cancer(shuffle: bool = False, testing: bool = False):
 
 
 def preprocess_data_adult_income(shuffle: bool = False, testing: bool = False):
+    """
+    Función que devuelve los datos preprocesados del dataset Adult Income.
+    :param shuffle: Booleano que indica si se quiere mezclar el orden de las características.
+    :param testing: Booleano que indica si el conjunto de datos se carga para test unitarios.
+    :return: Tupla con los datos preprocesados y las etiquetas de Adult Income.
+    """
     try:
         if testing:
             data = pd.read_csv("data/adult.data")
@@ -78,6 +98,7 @@ def preprocess_data_adult_income(shuffle: bool = False, testing: bool = False):
     data = data.dropna()
 
     if shuffle:
+        logger.info("Shuffling characteristics of dataset BREAST CANCER...")
         target = data['income']
         data = data.iloc[:, :-1]
         data = data.sample(frac=1, axis=1).reset_index(drop=True)
@@ -94,8 +115,12 @@ def preprocess_data_adult_income(shuffle: bool = False, testing: bool = False):
 
 
 def load_client_data(num_parties, client_id, data, labels):
-    # TODO Poner si devolver con o sin train_test_split
-    # TODO Poner si se devuelve con o sin ID
+
+    """
+    Función encargada de crear la partición de los datos para cada cliente a partir de los datos globales.
+    Ningún cliente comparte características con otro. Ante características indivisibles entre el número de clientes,
+    se asignan las características restantes al último cliente.
+    """
     num_chars = len(data[0]) - 1  # Para evitar considerar el ID como característica
     chars_per_party = math.floor(num_chars / num_parties)
     data = data[:, 1:]
@@ -111,3 +136,6 @@ def load_client_data(num_parties, client_id, data, labels):
         party_charts = data[:, (client_id - 1) * chars_per_party: client_id * chars_per_party]
 
     return np.hstack((labels[:, 0].reshape(-1, 1), party_charts)), labels[:, 1].reshape(-1, 1)
+
+    # TODO Poner si devolver con o sin train_test_split
+    # TODO Poner si se devuelve con o sin ID
