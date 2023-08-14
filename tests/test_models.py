@@ -39,9 +39,9 @@ def test_load_simple_model():
     assert model.output_shape == (None, 1)
 
 
-def test_load_simple_modelo_with_more_params():
+def test_load_simple_model_with_more_params():
     input_dim = 10
-    model = load_simple_model_with_more_params(input_dim=input_dim, name='simple_model')
+    model = load_simple_model_with_more_params(input_dim=input_dim, name="simple_model_more_params")
     # Caso 1: Instancia de keras.Model
     assert isinstance(model, keras.Model)
 
@@ -53,7 +53,7 @@ def test_load_simple_modelo_with_more_params():
     assert model.layers[4].units == 1
 
     # Caso 3: Nombre correcto
-    assert model.name == "simple_model"
+    assert model.name == "simple_model_more_params"
 
     # Caso 4: Activaciones correctas
     # assert model.layers[0].activation == "selu"
@@ -95,12 +95,24 @@ def test_load_ensemble():
 # TODO Mirar como hacer el resto de comprobaciones de actualizaciones del modelo
 # TODO Pensar en tratamiento de excepciones para las creaciciones y funciones del modelo
 def test_update_weights():
-    model1 = load_simple_model(input_dim=10, name='simple_model1')
-    model2 = load_simple_model(input_dim=10, name='simple_model2')
-    model3 = load_simple_model(input_dim=10, name='simple_model3')
-    models = [model1, model2, model3]
-    ensemble = load_ensemble(models=[model1, model2, model3])
-    for model in models:
-        ensemble = set_base_learner(ensemble, model, model.get_weights())
-    # for model in models:
-    #     assert np.array_equal(get_base_learner(ensemble, model.name), model.get_weights())
+    # Caso: Al no entrenar el modelo los pesos de los modelos establecidos deben de mantenerse iguales
+    models_func = [load_simple_model, load_simple_model_with_more_params]
+
+    for func in models_func:
+
+        model1 = func(input_dim=10, name='simple_model1')
+        model2 = func(input_dim=10, name='simple_model2')
+        model3 = func(input_dim=10, name='simple_model3')
+
+        models = [model1, model2, model3]
+
+        ensemble = load_ensemble(models=[model1, model2, model3])
+
+        for model in models:
+            ensemble = set_base_learner(ensemble=ensemble, bl_name=model.name, bl_weights=model.get_weights())
+
+        for model in models:
+            assert len(get_base_learner(ensemble=ensemble, model_name=model.name)) == len(model.get_weights())
+            for w1, w2 in zip(get_base_learner(ensemble=ensemble, model_name=model.name), model.get_weights()):
+                assert np.array_equal(w1, w2)
+
