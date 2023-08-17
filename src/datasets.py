@@ -1,5 +1,7 @@
 import math
 
+from sklearn.model_selection import train_test_split
+
 import config
 import numpy as np
 import pandas as pd
@@ -114,13 +116,20 @@ def preprocess_data_adult_income(shuffle: bool = False, testing: bool = False):
     return data_scaled, data_labels
 
 
-def load_client_data(num_parties, client_id, data, labels):
-
+def load_client_data(num_parties: int, client_id: int, data: np.ndarray, labels: np.ndarray,
+                     not_id_column: bool = False):
     """
     Función encargada de crear la partición de los datos para cada cliente a partir de los datos globales.
     Ningún cliente comparte características con otro. Ante características indivisibles entre el número de clientes,
     se asignan las características restantes al último cliente.
+    :param num_parties: Número de clientes.
+    :param client_id: ID del cliente.
+    :param data: Datos globales.
+    :param labels: Etiquetas globales.
+    :param not_id_column: Booleano que indica si retornor los datos con columna de ID.
+    :return: Tupla con los datos y las etiquetas del cliente.
     """
+
     num_chars = len(data[0]) - 1  # Para evitar considerar el ID como característica
     chars_per_party = math.floor(num_chars / num_parties)
     data = data[:, 1:]
@@ -135,7 +144,24 @@ def load_client_data(num_parties, client_id, data, labels):
     else:
         party_charts = data[:, (client_id - 1) * chars_per_party: client_id * chars_per_party]
 
-    return np.hstack((labels[:, 0].reshape(-1, 1), party_charts)), labels[:, 1].reshape(-1, 1)
+    data, labels = np.hstack((labels[:, 0].reshape(-1, 1), party_charts)), labels[:, 1].reshape(-1, 1)
+    # TODO Test de esto
+    if not_id_column:
+        data = data[:, 1:]
+    return data, labels
 
-    # TODO Poner si devolver con o sin train_test_split
-    # TODO Poner si se devuelve con o sin ID
+
+def load_client_train_test_split(num_parties, client_id, data, labels, test_size=0.2):
+    """
+    Función encargada de crear la partición de los datos y el split para entrenamiento y test para cada cliente a
+    partir de los datos globales.
+    :param num_parties: Número de clientes
+    :param client_id: ID del cliente
+    :param data: Datos globales
+    :param labels: Etiquetas globales
+    :param test_size: Tamano del conjunto de test
+    :return: train_data, test_data, train_labels, test_labels
+    """
+    data, labels = load_client_data(num_parties, client_id, data, labels, not_id_column=True)
+    train_data, test_data, train_labels, test_labels = train_test_split(data, labels, test_size=test_size)
+    return train_data, test_data, train_labels, test_labels

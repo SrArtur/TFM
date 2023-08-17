@@ -1,5 +1,5 @@
 import numpy as np
-from src.datasets import preprocess_data_adult_income, load_client_data
+from src.datasets import preprocess_data_adult_income, load_client_data, preprocess_data_breast_cancer, preprocess_data
 import pytest
 import os
 import sys
@@ -39,7 +39,7 @@ def test_preprocess_data_adult_income():
 
 def test_preprocess_data_breast_cancer():
     # Ejecutar la función sin shuffle
-    data_scaled, data_labels = preprocess_data_adult_income(shuffle=False, testing=True)
+    data_scaled, data_labels = preprocess_data_breast_cancer(shuffle=False, testing=True)
 
     # Comprobar que los datos tienen el formato esperado
     assert isinstance(data_scaled, np.ndarray)
@@ -49,7 +49,7 @@ def test_preprocess_data_breast_cancer():
     assert np.isnan(data_scaled).sum() == 0
 
     # Comprobar que las etiquetas están codificadas correctamente
-    assert np.unique(data_labels[1]).size == 2
+    assert data_labels.shape[1] == 2
 
     # Ejecutar la función con shuffle
     data_scaled_shuffled, data_labels_shuffled = preprocess_data_adult_income(shuffle=True, testing=True)
@@ -62,7 +62,7 @@ def test_preprocess_data_breast_cancer():
     assert np.isnan(data_scaled_shuffled).sum() == 0
 
     # Comprobar que las etiquetas están codificadas correctamente
-    assert np.unique(data_labels_shuffled[1]).size == 2
+    assert data_labels_shuffled.shape[1] == 2
 
     # Comprobar que los datos están realmente mezclados
     assert not np.array_equal(data_scaled, data_scaled_shuffled)
@@ -144,3 +144,17 @@ def test_load_client_data(sample_data_preprocessed):
     client_id = 2
     with pytest.raises(ValueError):
         load_client_data(num_parties, client_id, data[:1], labels)
+
+
+def test_preprocess_same_data():
+    dataset_names = ['breast_cancer', 'adult_income']
+    # Caso en el que se cargan los datos a partir de la función principal y desde las propias funciones de preprocesado
+    for name in dataset_names:
+        data, labels = preprocess_data(name, shuffle=False, testing=True)
+        if name == 'breast_cancer':
+            data_f, labels_f = preprocess_data_breast_cancer(shuffle=False, testing=True)
+        elif name == 'adult_income':
+            data_f, labels_f = preprocess_data_adult_income(shuffle=False, testing=True)
+
+    assert np.array_equal(data, data_f)
+    assert np.array_equal(labels, labels_f)
