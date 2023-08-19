@@ -17,3 +17,5 @@ rootLogger.addHandler(fileHandler)
 adult_data_path = "data/adult.data"
 breast_cancer_data_path = "data/breast-cancer.data"
 data_path = "data/"
+
+experiment_results_path = "logs/experiment_log/"
