@@ -1,4 +1,5 @@
 import tensorflow as tf
+from sklearn.metrics import roc_auc_score
 from tensorflow import keras
 from tensorflow.keras.utils import plot_model
 from keras.layers import Dense, Input, Concatenate
@@ -29,10 +30,11 @@ def load_simple_model(input_dim: int, name: str):
 
 def load_simple_model_with_more_params(input_dim: int, name: str):
     """
-    Carga un
-    :param input_dim:
-    :param name:
-    :return:
+    Carga un modelo simple con cuatro capas densas con un mayor número de parámetros y
+    una capa de salida con activación sigmoide.
+    :param input_dim: Número de características de entrada. Equivalente a la dimensión de la capa de entrada.
+    :param name: Nombre del modelo.
+    :return: Modelo keras.
     """
     inputs = Input(shape=(input_dim,))
     layer = Dense(input_dim, activation='selu')(inputs)
@@ -97,3 +99,20 @@ def set_base_learner(ensemble, bl_name: str, bl_weights: list):
             ensemble.layers[i].set_weights(bl_weights)
             break
     return ensemble
+
+
+def evaluate_model(model, test_data, test_label, r: int = 4, verbose: int = 0):
+    """
+    Evalúa el modelo pasado por parámetro con los datos de test.
+    :param model: Instancia de un modelo keras.
+    :param test_data: Datos de test.
+    :param test_label: Etiquetas de test.
+    :param r: Cifras decimales a mostrar.
+    :param verbose: Nivel de verbosidad.
+    :return: loss, acc, mse, auc
+    """
+    loss, acc, mse = model.evaluate(test_data, test_label, verbose=verbose)
+    predictions = model.predict(test_data, verbose=0)
+    auc = roc_auc_score(test_label, predictions)
+    loss, acc, mse, auc = round(loss, r), round(acc, r), round(mse, r), round(auc, r)
+    return loss, acc, mse, auc
