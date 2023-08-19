@@ -163,5 +163,6 @@ def load_client_train_test_split(num_parties, client_id, data, labels, test_size
     :return: train_data, test_data, train_labels, test_labels
     """
     data, labels = load_client_data(num_parties, client_id, data, labels, not_id_column=True)
-    train_data, test_data, train_labels, test_labels = train_test_split(data, labels, test_size=test_size)
+    train_data, test_data, train_labels, test_labels = train_test_split(data, labels, test_size=test_size,
+                                                                        random_state=42)
     return train_data, test_data, train_labels, test_labels
