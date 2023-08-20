@@ -100,7 +100,7 @@ def preprocess_data_adult_income(shuffle: bool = False, testing: bool = False):
     data = data.dropna()
 
     if shuffle:
-        logger.info("Shuffling characteristics of dataset BREAST CANCER...")
+        logger.info("Shuffling characteristics of dataset ADULT INCOME...")
         target = data['income']
         data = data.iloc[:, :-1]
         data = data.sample(frac=1, axis=1).reset_index(drop=True)
