@@ -102,9 +102,9 @@ def preprocess_data_adult_income(shuffle: bool = False, testing: bool = False):
     if shuffle:
         logger.info("Shuffling characteristics of dataset ADULT INCOME...")
         target = data['income']
-        data = data.iloc[:, :-1]
-        data = data.sample(frac=1, axis=1).reset_index(drop=True)
-        data['income'] = target
+        data = data.drop('income', axis=1)
+        data = data.sample(frac=1, axis=1)
+        data["income"] = target
 
     data_encoded = data.apply(LabelEncoder().fit_transform)
     scaler = StandardScaler()
@@ -126,7 +126,7 @@ def load_client_data(num_parties: int, client_id: int, data: np.ndarray, labels:
     :param client_id: ID del cliente.
     :param data: Datos globales.
     :param labels: Etiquetas globales.
-    :param not_id_column: Booleano que indica si retornor los datos con columna de ID.
+    :param not_id_column: Booleano que indica si retornar los datos con columna de ID.
     :return: Tupla con los datos y las etiquetas del cliente.
     """
 
@@ -145,7 +145,7 @@ def load_client_data(num_parties: int, client_id: int, data: np.ndarray, labels:
         party_charts = data[:, (client_id - 1) * chars_per_party: client_id * chars_per_party]
 
     data, labels = np.hstack((labels[:, 0].reshape(-1, 1), party_charts)), labels[:, 1].reshape(-1, 1)
-    # TODO Test de esto
+
     if not_id_column:
         data = data[:, 1:]
     return data, labels

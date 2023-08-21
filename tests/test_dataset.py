@@ -32,9 +32,9 @@ def test_preprocess_data_adult_income():
     # Comprobar que las etiquetas están codificadas correctamente
     assert np.unique(data_labels_shuffled[1]).size == 2
 
-    # Comprobar que los datos están realmente mezclados
+    # Comprobar que los datos están realmente mezclados pero las etiquetas no
     assert not np.array_equal(data_scaled, data_scaled_shuffled)
-    assert not np.array_equal(data_labels, data_labels_shuffled)
+    assert np.array_equal(data_labels, data_labels_shuffled)
 
 
 def test_preprocess_data_breast_cancer():
@@ -139,10 +139,11 @@ def test_load_client_data(sample_data_preprocessed):
     with pytest.raises(ValueError):
         load_client_data(num_parties, client_id, data, labels)
 
-    # Caso de prueba 6: Número de partes igual a 2 y ID de cliente igual a 2
+    # Caso de prueba 6: Número de partes igual a 2 y ID de cliente igual a 2.
     num_parties = 2
     client_id = 2
     with pytest.raises(ValueError):
+        # Número de características menor que el número de participantes
         load_client_data(num_parties, client_id, data[:1], labels)
 
 
