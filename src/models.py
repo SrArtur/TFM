@@ -1,5 +1,5 @@
 import tensorflow as tf
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, f1_score
 from tensorflow import keras
 from tensorflow.keras.utils import plot_model
 from keras.layers import Dense, Input, Concatenate
@@ -114,5 +114,7 @@ def evaluate_model(model, test_data, test_label, r: int = 4, verbose: int = 0):
     loss, acc, mse = model.evaluate(test_data, test_label, verbose=verbose)
     predictions = model.predict(test_data, verbose=0)
     auc = roc_auc_score(test_label, predictions)
-    loss, acc, mse, auc = round(loss, r), round(acc, r), round(mse, r), round(auc, r)
-    return loss, acc, mse, auc
+    predictions = np.round(predictions)
+    f1 = f1_score(y_true=test_label, y_pred=predictions)
+    loss, acc, mse, auc, f1 = round(loss, r), round(acc, r), round(mse, r), round(auc, r), round(f1, r)
+    return loss, acc, mse, auc, f1
