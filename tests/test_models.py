@@ -92,8 +92,6 @@ def test_load_ensemble():
     assert ensemble.output_shape == (None, 1)
 
 
-# TODO Mirar como hacer el resto de comprobaciones de actualizaciones del modelo
-# TODO Pensar en tratamiento de excepciones para las creaciciones y funciones del modelo
 def test_update_weights():
     # Caso: Al no entrenar el modelo los pesos de los modelos establecidos deben de mantenerse iguales
     models_func = [load_simple_model, load_simple_model_with_more_params]
