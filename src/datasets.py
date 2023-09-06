@@ -26,7 +26,7 @@ def preprocess_data(name: str = None, shuffle: bool = False, testing: bool = Fal
     elif name == "breast_cancer":
         return preprocess_data_breast_cancer(shuffle, testing)
     else:
-        raise ValueError("Dataset name not found")
+        raise ValueError("Dataset name not found. Available datasets: adult_income, breast_cancer")
 
 
 def preprocess_data_breast_cancer(shuffle: bool = False, testing: bool = False):
