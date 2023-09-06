@@ -1,0 +1,31 @@
+# Ignore github files
+.gitignore
+.github
+.git
+.gitkeep
+
+# Ignore pycharm files
+.idea/
+*.pyc
+__pycache__/
+*.pytest_cache/
+.pytest_cache/
+
+# Local configuration
+*.env
+*.pyo
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Data
+*.log
+.log
+*.json
+
+#Ignore logs
+logs/experiment_logs/*.json
+logs/main.log
