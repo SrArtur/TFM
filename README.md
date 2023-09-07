@@ -30,10 +30,15 @@ options:
 
 ````
 
+## Instalación de dependencias
+````bash
+pip install -r requirements.txt
+````
+
 ## Ejemplo de ejecución (local):
 Dos participantes, modelo simple, dos rondas, conjunto de datos: breast_cancer, nombre del experimento hello_vfl
 ````bash
-python main.py -np 2 -m simple -r 2 -d breast_cancer -n hello_vfl
+python main.py -np 2 -m complex -r 2 -d breast_cancer -n hello_vfl
 ````
 
 ## Construcción de la imagen Docker
